@@ -1,10 +1,8 @@
 'use strict'
 
 var gulp = require('gulp');
-
 var uncss = require('gulp-uncss');
 
-// gulp.task('default');
 gulp.task('default', function () {
     return gulp.src('./public/css/style.css')
         .pipe(uncss({

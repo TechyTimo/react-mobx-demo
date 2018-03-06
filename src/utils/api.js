@@ -85,7 +85,6 @@ export class APIStore {
 	}
 
 	fetch(table){
-		console.log(table)
 		return new Promise(function(resolve, reject){
 			store[table] = database[table] // replace with your server call
 			resolve(store[table]);
