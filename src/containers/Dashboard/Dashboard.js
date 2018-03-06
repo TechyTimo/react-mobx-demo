@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import { Switch, Route, withRouter, Link } from 'react-router-dom';
 import { observer } from "mobx-react"
-import store from '../../store.js';
+import store from '../../utils/store.js';
 
 // Pages
 import Profile from '../../pages/Profile/'

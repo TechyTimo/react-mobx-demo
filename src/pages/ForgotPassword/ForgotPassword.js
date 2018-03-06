@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import store from '../../store.js';
-import axios from 'axios';
+import api from '../../utils/api.js';
 
 
 class ForgotPassword extends Component {
@@ -25,16 +24,7 @@ class ForgotPassword extends Component {
       email: this.state.email,
       password: this.state.password,
     };
-
-    axios.post(store.api + '/password/email', data).then(response => {
-      if(!response.data.success){
-        store.toastr('error', '', response.data.message)
-        return;
-      };
-      this.props.history.push('/api/login')
-      store.toastr('success', 'Successfully requested!', 'Check your email for a reset link')
-    })
-    
+    api.requestPasswordReset(data)    
   }
 
   render() {

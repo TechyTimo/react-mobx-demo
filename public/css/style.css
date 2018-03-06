@@ -718,6 +718,7 @@ header.navbar {
         margin-right: 10px; }
       header.navbar .nav-item .nav-link > .img-avatar {
         height: 35px;
+        width: 35px;
         margin: 0 10px; }
 
 .navbar-brand {
@@ -1223,8 +1224,7 @@ body {
 
 .img-avatar {
   border-radius: 50em;
-  width: 36px;
-  height: 36px; }
-.avatar {
-  position: relative;
+  width: 100%; }
+
+.inline-block {
   display: inline-block; }

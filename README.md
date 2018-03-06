@@ -18,7 +18,7 @@ my-app/
     utils/
       store.js
       api.js - change this to point to your api 
-      database.js - for mocking
+      database.js - for the fake api
       cookies.js - easy api for accessing cookies
     index.js - entry point
 ```

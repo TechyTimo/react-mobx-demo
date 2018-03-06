@@ -1,16 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
-import history from './history'
+import history from './utils/history'
 
 // Containers
 import Dashboard from './containers/Dashboard/'
 import Simple from './containers/Simple/'
 
 // data source
-import store from './store.js';
-import api from './api.js';
-import axios from 'axios'
+import store from './utils/store.js';
+import api from './utils/api.js';
 
 
 store.history = history

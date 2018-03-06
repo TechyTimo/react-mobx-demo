@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import store from '../../store.js';
-import axios from 'axios'
-import { extendObservable } from 'mobx'
+import store from '../../utils/store.js';
+import api from '../../utils/api.js';
 
 class Register extends Component {
 
@@ -34,22 +33,15 @@ class Register extends Component {
       return;
     }
 
-    let reg = {
+    let data = {
       first_name: this.state.first_name,
       last_name: this.state.last_name,
       email: this.state.email, 
       password : this.state.password,
       password_confirmation : this.state.password_confirmation,
     }
-    axios.post(store.api + '/register', reg).then(response => {
-      if(!response.data.success){
-        store.toastr('error', '', response.data.message)
-        return;
-      };
-      
-      // notify
-      store.toastr('success', 'Successfully registered!', `Check ${this.state.email} for a link.`)
 
+    api.registerUser(data).then(() => {
       // clear form 
       this.setState({
         first_name: '',
@@ -60,7 +52,7 @@ class Register extends Component {
       })
       
       // redirect
-      this.props.history.push('/auth/login')
+      store.history.push('/auth/login')
     })
   }
 

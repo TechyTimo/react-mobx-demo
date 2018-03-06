@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../api.js';
-import store from '../../store.js';
-import axios from 'axios';
+import api from '../../utils/api.js';
+import store from '../../utils/store.js';
 
 class Login extends Component {
   

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { observer } from "mobx-react"
-import store from '../../store.js';
+import store from '../../utils/store.js';
+import api from '../../utils/api.js';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 import classnames from 'classnames';
-import axios from 'axios';
 
 @observer
 class Friends extends Component {
@@ -44,7 +44,7 @@ class Friends extends Component {
     store.title = ''
   }
   getFriends(){
-    let friends = store.users.filter(user => {
+    let friends = store.friends.filter(user => {
       var matchesFilter = new RegExp(this.state.search, "i")
       // except current user 
       if(user.id === store.user.id){
@@ -125,20 +125,8 @@ class Friends extends Component {
     }
     
     // register the user on the api
-    axios.post(`${store.api}/users`, data).then(response => {
-      if(!response.data.success){
-        store.toastr('error', '', response.data.message)
-        this.setState({loading: false})
-        return;
-      }
-      let user = response.data.data
-      
-      // add the user account
-      store.users.push(user)
+    api.inviteUser(data).then(() => {
 
-      // show toast
-      store.toastr('success', 'Successfully invited user!', `${this.state.first_name} has been sent an email.`)
-      
       // clear new-user form
       this.setState({
         modalTitle: '',
@@ -189,7 +177,7 @@ class Friends extends Component {
                   className={classnames({ active: this.state.activeTab === '1' })}
                   onClick={() => { this.toggleTab('1'); }}
                 >
-                  <span className="fa fa-filter"></span> Filter Friends ({store.users.length})
+                  <span className="fa fa-filter"></span> Filter Friends ({store.friends.length})
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -248,10 +236,10 @@ class Friends extends Component {
                 </div>
                 
                 <div className="my-h">
-                  <div className="avatar col-2">
+                  <div className="col-sm-4 inline-block">
                     <img src={user.image || store.tempImage} className="img-avatar" alt="Image"/>
                   </div>
-                  <div className="col-10 float-right">
+                  <div className="col-sm-8 float-right">
                     <p className="mb-h"><b>Email:</b> {user.email} {!!user.email_verified && <span className="fa fa-check" data-tip="Verified" data-effect="solid"></span>}</p>
                     <p className="mb-h"><b>Joined:</b> {user.created_at} </p>
                   </div>
@@ -260,13 +248,13 @@ class Friends extends Component {
               </div>
             </div>
           ))}
-          {store.users.length > 0 || (
+          {store.friends.length > 0 || (
             <div className="col-sm-12">
               <br/>
               <h5>Invite your first connection here</h5>
             </div>
           )}
-          {store.users.length > 0 && this.getFriends().length === 0 && (
+          {store.friends.length > 0 && this.getFriends().length === 0 && (
             <div className="col-sm-12">
               <br/>
               <h5>No friends match the selection...</h5>

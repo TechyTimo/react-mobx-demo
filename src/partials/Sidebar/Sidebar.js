@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom'
 import { observer } from "mobx-react"
-import store from '../../store.js';
+import store from '../../utils/store.js';
 
 @observer
 class Sidebar extends Component {

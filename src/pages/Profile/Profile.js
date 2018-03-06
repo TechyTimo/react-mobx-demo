@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { observe } from "mobx"
 import { observer } from "mobx-react"
-import store from '../../store.js';
-import axios from 'axios'
+import store from '../../utils/store.js';
+import api from '../../utils/api.js';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Link, withRouter } from 'react-router-dom';
 
@@ -64,37 +64,23 @@ class Profile extends Component {
       email: this.state.email,
     }
     // update on api
-    axios.post(`${store.api}/users/${store.user.id}`, data).then(response => {
-      if(!response.data.success){
-        store.toastr('error', '', response.data.message)
-        return;
-      }
-      // update the view
-      store.user.first_name = data.first_name
-      store.user.last_name = data.last_name
-      store.user.email = data.email
-      store.toastr('success', 'Name, email, photo updated!')
-    })
+    api.updateUser(data)
 
   }
 
   updatePassword(e) {
     e.preventDefault()
-    // @todo - post update via axios 
-    let password = {      
+
+    let data = {      
       old_password: this.state.old_password,
       password: this.state.password,
       password_confirmation: this.state.password_confirmation,
     }
     // update on api
-    axios.post(`${store.api}/password`, password).then(response => {
-      if(!response.data.success){
-          store.toastr('error', '', response.data.message)
-          return;
-      }
-      this.closeAside()
-      store.toastr('success', 'Password updated!')
-    })
+    api.updatePassword(data)
+      .then(() => {
+        this.closeAside()
+      })
   }
 
   render() {

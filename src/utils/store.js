@@ -9,7 +9,8 @@ export class MainStore {
 	@observable redirectTo = '/'
 	@observable history = {} // for navigation
   	@observable user = {}
-  	@observable users = []
+  	@observable friends = []
+  	@observable posts = []
 	@observable title = ''
 
 	loadUser(user, token){
@@ -66,7 +67,7 @@ export class MainStore {
 	    store.history.push('/auth/login')
 
 	    store.user = {}
-	    store.users = []
+	    store.friends = []
 	    store.status.loaded = false
 	}
 

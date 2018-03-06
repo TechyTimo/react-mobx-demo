@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import { observer } from "mobx-react"
-
-import store from '../../store.js';
+import store from '../../utils/store.js';
 
 @observer
 class Header extends Component {

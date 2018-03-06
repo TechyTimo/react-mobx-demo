@@ -2,7 +2,7 @@ import { observable } from "mobx"
 
 export class DataStore {
 
-	@observable users = [
+	@observable friends = [
 		{
 			id : 1001,
 			first_name : 'Chuck',

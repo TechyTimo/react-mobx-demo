@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import store from '../../store.js';
-import axios from 'axios';
+import store from '../../utils/store.js';
+import api from '../../utils/api.js';
 
 class ResetPassword extends Component {
 
@@ -31,22 +31,7 @@ class ResetPassword extends Component {
       password_confirmation: this.state.password_confirmation,
     };
 
-    axios.post(store.api + '/set-password', data).then(response => {
-      let { success, message, data, headers } = response.data
-      if(!success){
-        store.toastr('error', message)
-        return;
-      }
-
-      // set session
-      let token = store.fetchToken(response)
-      
-      // inform
-      store.toastr('success', message, 'Logging you in...')
-      
-      // log in the user
-      store.login(data, token)
-    }) 
+    api.resetPassword(data)
   }
 
   render() {

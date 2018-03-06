@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { observer } from "mobx-react"
 import { withRouter } from "react-router-dom"
-import store from '../../store.js';
+import store from '../../utils/store.js';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 @observer
