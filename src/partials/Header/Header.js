@@ -39,10 +39,6 @@ class Header extends Component {
         
         <Link to={'/'} className="navbar-brand logo"></Link>
 
-        <button className="navbar-toggler mobile-sidebar-toggler hidden-lg-up float-right" type="button">
-          <span className="fa fa-dedent"></span>
-        </button>
-
         <ul className="nav navbar-nav hidden-md-down">
           <li className="nav-item">
             <a className="nav-link navbar-toggler sidebar-toggler" onClick={this.sidebarToggle} href="javascript:;">&#9776;</a>
@@ -50,13 +46,13 @@ class Header extends Component {
         </ul>
         <ul className="nav navbar-nav ml-auto">
 
-          <li className="nav-item hidden-md-down">
+          <li className="nav-item">
             <a className="nav-link" href="javascript:;">
               <img src={ store.user.image || store.tempImage } className="img-avatar" alt=""/>
-              <span className="hidden-md-down">{store.user.first_name}</span>
+              <span className="">{store.user.first_name}</span>
             </a>
           </li>
-          <li className="nav-item hidden-md-down">
+          <li className="nav-item">
             <a className="nav-link" onClick={this.confirmLogout.bind(this)} href="javascript:;"><i className="icon-logout"></i></a>
           </li>
         </ul>

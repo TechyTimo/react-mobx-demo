@@ -676,7 +676,7 @@ select.form-control:focus::-ms-value {
 
 .navbar-toggler {
   align-self: flex-start;
-  padding: 0.25rem 0.75rem;
+  padding: 1rem 0.75rem;
   font-size: 1.25rem;
   line-height: 1;
   background: transparent;
@@ -1094,7 +1094,14 @@ body {
     height: calc(100vh - 55px); }
 
 .sidebar-fixed .main, .sidebar-fixed .app-footer {
-  margin-left: 200px; }
+  margin-left: 200px;}
+
+.sidebar-fixed.sidebar-hidden .main, .sidebar-fixed.sidebar-hidden .app-footer,
+.sidebar-fixed.sidebar-mobile-show .main, .sidebar-fixed.sidebar-mobile-show .app-footer {
+  margin-left: 0;}
+
+.sidebar-mobile-show .sidebar .sidebar-nav {
+  margin-left: -200px;}
 
 .app-header,
 .app-footer,
@@ -1139,6 +1146,10 @@ body {
   padding: 0;
   color: #2a2c36;
   background: #33acc1; }
+
+.sidebar-hidden .sidebar {
+  margin-left: -200px; }
+
   .sidebar .sidebar-nav {
     position: relative;
     overflow-x: hidden;
