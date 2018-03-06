@@ -1,6 +1,14 @@
 
 Simple react + mobx demo covering login with cookie storage, registration and navigation and a few more pages
 
+## Steps
+
+### 1. Rename .env_example to .env (you can adjust it to your preference)
+### 2. yarn
+### 3. yarn start
+### 4. Adjust src/utils/api.js to your preference
+
+
 ## Folder Structure
 
 ```
