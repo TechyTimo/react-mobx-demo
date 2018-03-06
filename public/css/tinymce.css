@@ -1,0 +1,10 @@
+body, td, th {
+	font-family: Helvetica,sans-serif;
+	color: #444444;
+}
+.mce-item-table, .mce-item-table td, .mce-item-table th, .mce-item-table caption {
+  border: none !important;
+}
+.mce-menubtn.mce-fixed-width span {
+    width: auto;
+}
