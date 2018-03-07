@@ -186,7 +186,7 @@ class APIStore {
 }
 let api = new APIStore
 
-if(process.env.NODE_ENV == 'development'){
+if(process.env.NODE_ENV === 'development'){
 	window.api = api // expose for testing
 }
 

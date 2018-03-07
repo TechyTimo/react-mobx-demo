@@ -176,7 +176,7 @@ class DataStore {
 }
 let database = new DataStore
 
-if(process.env.NODE_ENV == 'development'){
+if(process.env.NODE_ENV === 'development'){
 	window.database = database // expose for testing
 }
 

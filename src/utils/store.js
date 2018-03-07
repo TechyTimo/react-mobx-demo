@@ -181,7 +181,7 @@ class MainStore {
 }
 let store = new MainStore
 
-if(process.env.NODE_ENV == 'development'){
+if(process.env.NODE_ENV === 'development'){
 	window.store = store // expose for testing
 }
 
