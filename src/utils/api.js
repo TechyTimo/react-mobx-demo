@@ -25,9 +25,32 @@ class APIStore {
 		}
 	}
 
-	login(email, password){
-		let data = { email, password }
-		// replace with your server call...
+	login(data){
+		return axios.post(api.base + '/login', data).then(response => {
+			let { success, message, data } = response.data
+			if(!success){
+				store.toastr('error', message)
+				return Promise.reject();
+			}
+			// set session
+			let token = api.fetchToken(response)
+
+			if(token){
+				// inform
+				store.toastr('success', message, 'Loading your data...')
+				
+				return Promise.resolve([data, token])
+			}
+			else {
+				store.toastr('error', 'Failed to authorize...', message)
+				// @todo - report bug
+				return Promise.reject();
+			}
+		});
+	}
+
+	fakeLogin(data){
+		let { email, password } = data
 		let user = database.friends.where('email', email)[0] 
 		if(!user){
 			store.toastr('error', 'Email not registered', 'No user by that email')
@@ -63,28 +86,46 @@ class APIStore {
 				resolve(store.user);
 	    	}
 			catch(error) {
-				reject(error)
+				// @todo - report error + token + expiry
+				console.log('Failed to decode token')
+				store.logout().then(()=>{
+					store.toastr('error', 'Welcome back', 'Please log in')
+					reject(error)
+				})
 			}
     	});
     }
 
 	fetchUser() {
-		return new Promise(function(resolve, reject){
-			axios.get(api.base + '/user').then(response => {
-			  if(!response.data.success){
-				  store.logout()
-				  store.toastr('error', '', response.data.message)
-				  return;
-			  }
-			  if(response.data.data){
-				let user = response.data.data
-				resolve(user);
-			  }
-			})
-		});
+		return axios.get(api.base + '/user').then(response => {
+		  let { success, message, data } = response.data
+		  if(!success){
+			store.logout()
+			store.toastr('error', '', message)
+			return;
+		  }
+		  if(data){
+			let user = data
+			Promise.resolve(user);
+		  }
+		})
 	}
 
 	fetch(table){
+		return axios.get(store.api + '/' + table).then(response => {
+	      let { success, message, data } = response.data
+	      if(!success){
+			store.toastr('error', '', message)
+			return Promise.reject();
+	      }
+	      if(data){
+      		store[table] = data;
+	      	return Promise.resolve(store[table]);
+	      }
+	    })
+	}
+	
+	fakeFetch(table){
 		return new Promise(function(resolve, reject){
 			store[table] = database[table] // replace with your server call
 			resolve(store[table]);
@@ -103,8 +144,9 @@ class APIStore {
 
 	requestPasswordReset(data){
 		return axios.post(api.base + '/password/email', data).then(response => {
-	      if(!response.data.success){
-	        store.toastr('error', '', response.data.message)
+		  let { success, message } = response.data
+	      if(!success){
+	        store.toastr('error', '', message)
 	        return;
 	      };
 	      store.history.push('/api/login')
@@ -114,7 +156,7 @@ class APIStore {
 
 	resetPassword(data) {
 		return axios.post(store.api + '/set-password', data).then(response => {
-	      let { success, message, data, headers } = response.data
+	      let { success, message, data } = response.data
 	      if(!success){
 	        store.toastr('error', message)
 	        return;
@@ -128,16 +170,20 @@ class APIStore {
 	      
 	      // log in the user
 	      store.login(data, token)
+	      	.then(()=>{
+	      		store.toastr('success', 'Welcome', 'Successfully logged in!')
+	      	})
 	    })
 	}
 
 	inviteUser(data) {
 		return axios.post(`${api.base}/users`, data).then(response => {
-	      if(!response.data.success){
-	        store.toastr('error', '', response.data.message)
+	      let { success, message, data } = response.data
+	      if(!success){
+	        store.toastr('error', '', message)
 	        return;
 	      }
-	      let user = response.data.data
+	      let user = data
 	      
 	      // add the user account
 	      store.friends.push(user)
@@ -149,8 +195,9 @@ class APIStore {
 
 	updateUser(data) {
 		return axios.post(`${api.base}/users/${store.user.id}`, data).then(response => {
-	      if(!response.data.success){
-	        store.toastr('error', '', response.data.message)
+		  let { success, message } = response.data
+	      if(!success){
+	        store.toastr('error', '', message)
 	        return;
 	      }
 	      // update the view
@@ -163,8 +210,9 @@ class APIStore {
 
 	updatePassword(data) {
 		return axios.post(`${api.base}/password`, data).then(response => {
-	      if(!response.data.success){
-	          store.toastr('error', '', response.data.message)
+		  let { success, message } = response.data
+	      if(!success){
+	          store.toastr('error', '', message)
 	          return;
 	      }
 	      store.toastr('success', 'Password updated!')
@@ -173,8 +221,9 @@ class APIStore {
 
 	registerUser(data) {
 		return axios.post(store.api + '/register', data).then(response => {
-	      if(!response.data.success){
-	        store.toastr('error', '', response.data.message)
+		  let { success, message } = response.data
+	      if(!success){
+	        store.toastr('error', '', message)
 	        return;
 	      };
 	      

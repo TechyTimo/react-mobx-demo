@@ -23,13 +23,14 @@ class Login extends Component {
 
   login(e){
     e.preventDefault()
+    let data = {
+      email: this.state.email,
+      password: this.state.password
+    }
 
-    let email = this.state.email
-    let password = this.state.password
-
-    api.login(email, password)
+    api.fakeLogin(data) // replace with api.login
       .then(([user, token]) => store.login(user, token))
-      .then(api.fetch('friends'))
+      .then(api.fakeFetch('friends')) // replace with api.fetch
       .then(() => {
         store.toastr('success', 'Welcome', 'Successfully logged in!')
         store.status.loaded = true 

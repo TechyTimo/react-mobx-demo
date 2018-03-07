@@ -45,7 +45,7 @@ class MainStore {
 			// set the token header
 			api.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 			
-			// save the token on the client
+			// save the token on the client for 1 hour
 			api.cookies.setItem('demo_app_jwt', token, 1)
 			
 			// declare logged in
@@ -62,17 +62,19 @@ class MainStore {
 	}
 
 	logout() {
-	    api.cookies.removeItem('demo_app_jwt')
-	    localStorage.removeItem('demo_app_user')
-        
-        delete api.axios.defaults.headers.common['Authorization']	        
+		return new Promise(function(resolve, reject){
+		    api.cookies.removeItem('demo_app_jwt')
+		    localStorage.removeItem('demo_app_user')
+	        
+	        delete api.axios.defaults.headers.common['Authorization']	        
 
-	    store.auth = false
-	    store.history.push('/auth/login')
+		    store.auth = false
+		    store.history.push('/auth/login')
 
-	    store.user = {}
-	    store.friends = []
-	    store.status.loaded = false
+		    store.user = {}
+		    store.friends = []
+		    store.status.loaded = false
+	    });
 	}
 
 	@observable isURL = (str) => {

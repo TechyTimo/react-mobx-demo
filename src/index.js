@@ -30,7 +30,7 @@ if(api.token){
   store.loadUser()
     .then(user => {
       store.login(user, api.token)
-      .then(api.fetch('friends'))
+      .then(api.fakeFetch('friends')) // replace with api.fetch
       .then(() => {
         store.status.loaded = true 
       })
