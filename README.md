@@ -7,7 +7,9 @@ Simple react + mobx demo covering login with cookie storage, registration and na
   1. Rename .env_example to .env
   2. yarn
   3. yarn start
-  4. Adjust src/utils/api.js and .env to your preference
+  4. Set up your api 
+  5. Edit .env and all urls called on src/utils/api.js to match your settings
+  6. Replace where api.fakeLogin and api.fakeFetch are called with api.login() and api.fetch()
 ```
 
 ## Folder Structure
