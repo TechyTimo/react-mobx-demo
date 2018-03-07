@@ -44,9 +44,13 @@ class ForgotPassword extends Component {
                   <input type="text" className="form-control" placeholder="email" 
                     value={this.state.email} onChange={this.changeInput} name="email"/>
                 </div>
-                <div>
-                  <Link to="/auth/login" className="float-left btn btn-link px-0">Login</Link>
-                  <button type="submit" className="float-right btn btn-primary px-2">Request Reset Link</button>
+                <div className="row">
+                  <div className="col-4">
+                    <Link to="/auth/login" className="float-left btn btn-link px-0">Login</Link>
+                  </div>
+                  <div className="col-8 text-right">
+                    <button type="submit" className="float-right btn btn-primary px-2">Request Reset Link</button>
+                  </div>
                 </div>
               </form>
             </div>
