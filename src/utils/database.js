@@ -180,4 +180,4 @@ if(process.env.NODE_ENV == 'development'){
 	window.database = database // expose for testing
 }
 
-export default DataStore
+export default database

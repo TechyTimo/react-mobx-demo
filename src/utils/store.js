@@ -13,24 +13,28 @@ class MainStore {
   	@observable posts = []
 	@observable title = ''
 
-	loadUser(user, token){
+	loadUser(){
 		return new Promise(function(resolve, reject){
-			// load the user from localStorage
-			let user = JSON.parse(localStorage.getItem('demo_app_user'))
+
+			// decode user from token
+			let user = api.decodeUserFromToken()
+
 			if(user){
 				resolve(user)
 			}
 			else{
-				// decode user from token
-				user = api.decodeUserFromToken().then(user => resolve(user))
+				
+				// load the user from localStorage
+				user = JSON.parse(localStorage.getItem('demo_app_user'))
 
-				// load user from api - last resort
-				if (!user){ 
+				if(user){
+					resolve(user)
+				}
+				else{
+					// load user from api - last resort
 					user = api.fetchUser().then(user => resolve(user))
 				}
-				
 			}
-
 		});
 	}
 	login(user, token){

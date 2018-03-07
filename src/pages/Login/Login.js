@@ -31,6 +31,7 @@ class Login extends Component {
       .then(([user, token]) => store.login(user, token))
       .then(api.fetch('friends'))
       .then(() => {
+        store.toastr('success', 'Welcome', 'Successfully logged in!')
         store.status.loaded = true 
       }) 
   }
