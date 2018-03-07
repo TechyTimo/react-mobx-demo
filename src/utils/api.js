@@ -30,23 +30,16 @@ class APIStore {
 			let { success, message, data } = response.data
 			if(!success){
 				store.toastr('error', message)
-				return Promise.reject();
+				return Promise.reject(message)
 			}
 			// set session
 			let token = api.fetchToken(response)
 
-			if(token){
-				// inform
-				store.toastr('success', message, 'Loading your data...')
-				
-				return Promise.resolve([data, token])
-			}
-			else {
-				store.toastr('error', 'Failed to authorize...', message)
-				// @todo - report bug
-				return Promise.reject();
-			}
-		});
+			// inform
+			store.toastr('success', message, 'Loading your data...')
+			
+			return Promise.resolve([data, token])
+		})
 	}
 
 	fakeLogin(data){
@@ -69,21 +62,21 @@ class APIStore {
 				    	"issuedAt": Date.now(), 
 					},
 				    token = new TokenSigner('ES256k', rawPrivateKey).sign(tokenPayload)
-				resolve([user, token]);
+				resolve([user, token])
 			}
 			catch(error) {
 				reject(error)
 			}
-		});
+		})
 	}
 
 	decodeUserFromToken() {
 		return new Promise(function(resolve, reject){
 			try{
 				let tokenData = decodeToken(api.token),
-					user = tokenData.payload;
+					user = tokenData.payload
 				store.user = {...user}
-				resolve(store.user);
+				resolve(store.user)
 	    	}
 			catch(error) {
 				// @todo - report error + token + expiry
@@ -93,7 +86,7 @@ class APIStore {
 					reject(error)
 				})
 			}
-    	});
+    	})
     }
 
 	fetchUser() {
@@ -102,11 +95,11 @@ class APIStore {
 		  if(!success){
 			store.logout()
 			store.toastr('error', '', message)
-			return;
+			return Promise.reject(message)
 		  }
 		  if(data){
 			let user = data
-			Promise.resolve(user);
+			Promise.resolve(user)
 		  }
 		})
 	}
@@ -116,11 +109,11 @@ class APIStore {
 	      let { success, message, data } = response.data
 	      if(!success){
 			store.toastr('error', '', message)
-			return Promise.reject();
+			return Promise.reject(message)
 	      }
 	      if(data){
-      		store[table] = data;
-	      	return Promise.resolve(store[table]);
+      		store[table] = data
+	      	return Promise.resolve(store[table])
 	      }
 	    })
 	}
@@ -128,8 +121,8 @@ class APIStore {
 	fakeFetch(table){
 		return new Promise(function(resolve, reject){
 			store[table] = database[table] // replace with your server call
-			resolve(store[table]);
-		});
+			resolve(store[table])
+		})
 	}
 	
 	@observable promises = []
@@ -147,8 +140,8 @@ class APIStore {
 		  let { success, message } = response.data
 	      if(!success){
 	        store.toastr('error', '', message)
-	        return;
-	      };
+	        return Promise.reject(message)
+	      }
 	      store.history.push('/api/login')
 	      store.toastr('success', 'Successfully requested!', 'Check your email for a reset link')
 	    })
@@ -159,7 +152,7 @@ class APIStore {
 	      let { success, message, data } = response.data
 	      if(!success){
 	        store.toastr('error', message)
-	        return;
+	        return Promise.reject(message)
 	      }
 
 	      // inform
@@ -181,7 +174,7 @@ class APIStore {
 	      let { success, message, data } = response.data
 	      if(!success){
 	        store.toastr('error', '', message)
-	        return;
+	        return Promise.reject(message)
 	      }
 	      let user = data
 	      
@@ -190,7 +183,7 @@ class APIStore {
 
 	      // show toast
 	      store.toastr('success', 'Successfully invited user!', `${data.first_name} has been sent an email.`)
-	    });
+	    })
 	}
 
 	updateUser(data) {
@@ -198,7 +191,7 @@ class APIStore {
 		  let { success, message } = response.data
 	      if(!success){
 	        store.toastr('error', '', message)
-	        return;
+	        return Promise.reject(message)
 	      }
 	      // update the view
 	      store.user.first_name = data.first_name
@@ -212,8 +205,8 @@ class APIStore {
 		return axios.post(`${api.base}/password`, data).then(response => {
 		  let { success, message } = response.data
 	      if(!success){
-	          store.toastr('error', '', message)
-	          return;
+			store.toastr('error', '', message)
+			return Promise.reject(message)
 	      }
 	      store.toastr('success', 'Password updated!')
 	    })
@@ -224,8 +217,8 @@ class APIStore {
 		  let { success, message } = response.data
 	      if(!success){
 	        store.toastr('error', '', message)
-	        return;
-	      };
+	        return Promise.reject(message)
+	      }
 	      
 	      // notify
 	      store.toastr('success', 'Successfully registered!', `Check ${data.email} for a link.`)
