@@ -1,7 +1,7 @@
 import { computed, observable } from "mobx"
 import api from './api.js'
 
-export class MainStore {
+class MainStore {
 
 	@observable api = process.env.REACT_APP_API+'/api'
 	@observable auth = false
@@ -175,6 +175,10 @@ export class MainStore {
 	@observable sharing = {}
 
 }
-let store = window.store = new MainStore
+let store = new MainStore
+
+if(process.env.NODE_ENV == 'development'){
+	window.store = store // expose for testing
+}
 
 export default store

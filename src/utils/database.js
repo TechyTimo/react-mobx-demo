@@ -1,6 +1,6 @@
 import { observable } from "mobx"
 
-export class DataStore {
+class DataStore {
 
 	@observable friends = [
 		{
@@ -174,6 +174,10 @@ export class DataStore {
 	@observable comments = []
 
 }
-let database = window.database = new DataStore
+let database = new DataStore
 
-export default database
+if(process.env.NODE_ENV == 'development'){
+	window.database = database // expose for testing
+}
+
+export default DataStore

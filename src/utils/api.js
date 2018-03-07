@@ -5,7 +5,7 @@ import store from './store.js'
 import database from './database.js'
 import axios from 'axios'
 
-export class APIStore {
+class APIStore {
 
 	@observable base = process.env.REACT_APP_API+'/api'
 	@observable axios = axios // expose for testing
@@ -184,6 +184,10 @@ export class APIStore {
 	    })
 	}
 }
-let api = window.api = new APIStore
+let api = new APIStore
+
+if(process.env.NODE_ENV == 'development'){
+	window.api = api // expose for testing
+}
 
 export default api
