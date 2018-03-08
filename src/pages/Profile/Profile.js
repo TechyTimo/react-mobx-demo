@@ -34,28 +34,24 @@ class Profile extends Component {
   }
 
   setUser(){
+    let { user } = this.props
     this.setState({
-      first_name: store.user.first_name,
-      last_name: store.user.last_name,
-      email: store.user.email,
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
     })
   }
 
-  componentWillMount(){
-    if(store.status.loaded){
-      this.setUser()
-    }
-    else{
-      observe(store.status, (change) => {
-        this.setUser()
-      })
-    }
+  componentDidMount(){
+    this.setUser()
   }
+
   resetUser(e) {
     e.preventDefault()
     this.setUser()
     store.toastr('info', 'Name, email, photo reset!')
   }
+  
   updateUser(e) {
     e.preventDefault()
     let data = {      

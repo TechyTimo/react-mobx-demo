@@ -12,7 +12,7 @@
     "axios": "^0.16.2",
     "gulp-uncss": "^1.0.6",
     "history": "^4.7.2",
-    "jwt-js": "^0.5.0",
+    "jsonwebtoken": "^8.2.0",
     "mobx": "^3.2.2",
     "mobx-react": "^4.2.2",
     "react": "15.6.1",

@@ -10,7 +10,9 @@ class MainStore {
 	@observable history = {} // for navigation
   	@observable user = {}
   	@observable friends = []
+  	@observable friend = {}
   	@observable posts = []
+  	@observable post = {}
 	@observable title = ''
 
 	loadUser(){
@@ -77,17 +79,6 @@ class MainStore {
 	    });
 	}
 
-	@observable isURL = (str) => {
-		var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-		'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // source name and extension
-		'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-		'(\\:\\d+)?'+ // port
-		'(\\/[-a-z\\d%@_.~+&:]*)*'+ // path
-		'(\\?[;&a-z\\d%@_.,~+&:=-]*)?'+ // query string
-		'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-		return pattern.test(str);
-	}
-
 	@observable setPrototypes = () => {
 		/**
 		 * Padding numbers with zeroes
@@ -121,6 +112,8 @@ class MainStore {
 			    return 0;
 			})
 		}
+		// arr.tagged().where(key, value).sortBy(sort).orderBy(order)
+
 		Array.prototype.contains = function(v) {
 		    for(var i = 0; i < this.length; i++) {
 		        if(this[i] === v) return true;
@@ -137,20 +130,29 @@ class MainStore {
 		    }
 		    return arr; 
 		}
-		// arr.tagged().where(key, value).sortBy(sort).orderBy(order)
-		if (!String.prototype.includes) {
-		  String.prototype.includes = function(search, start) {
-		    'use strict';
-		    if (typeof start !== 'number') {
-		      start = 0;
-		    }
-		    
-		    if (start + search.length > this.length) {
-		      return false;
-		    } else {
-		      return this.indexOf(search, start) !== -1;
-		    }
-		  };
+
+		String.prototype.includes = function(search, start) {
+			'use strict';
+			if (typeof start !== 'number') {
+			  start = 0;
+			}
+
+			if (start + search.length > this.length) {
+			  return false;
+			} else {
+			  return this.indexOf(search, start) !== -1;
+			}
+		}
+
+		String.prototype.isURL = function(){
+			var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+			'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // source name and extension
+			'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+			'(\\:\\d+)?'+ // port
+			'(\\/[-a-z\\d%@_.~+&:]*)*'+ // path
+			'(\\?[;&a-z\\d%@_.,~+&:=-]*)?'+ // query string
+			'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+			return pattern.test(this);
 		}
 	}
 

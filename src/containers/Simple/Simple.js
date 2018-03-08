@@ -25,7 +25,7 @@ class Simple extends Component {
     return (
       <div className="app flex-row align-items-center">
 
-      <ToastContainer ref={(input) => {store.toast = input;}}
+      <ToastContainer ref={(input) => {store.toast = input}}
         toastMessageFactory={ToastMessageFactory}
         className="toast-top-right" />
           

@@ -1,5 +1,5 @@
 import { computed, observable } from "mobx"
-import { TokenSigner, decodeToken } from 'jwt-js'
+import jwt from 'jsonwebtoken'
 import cookies from './cookies.js'
 import store from './store.js'
 import database from './database.js'
@@ -56,16 +56,25 @@ class APIStore {
 
 		return new Promise(function(resolve, reject){
 			try{
-				let rawPrivateKey = process.env.REACT_APP_KEY,
-				    tokenPayload = {
-				    	...user,
-				    	"issuedAt": Date.now(), 
+
+				let { first_name, last_name, email, image } = user,
+					data = { 
+						user: { first_name, last_name, email, image },
+						from: 'frontend',
 					},
-				    token = new TokenSigner('ES256k', rawPrivateKey).sign(tokenPayload)
-				resolve([user, token])
+					key = process.env.REACT_APP_KEY,
+					options = { 
+						algorithm: 'HS256',
+						expiresIn: '1h', 
+						notBefore: '0h',
+						subject: user.id + ''
+					},
+					token = jwt.sign(data, key, options)
+
+				return resolve([user, token])
 			}
 			catch(error) {
-				reject(error)
+				store.toastr('error', error.message)
 			}
 		})
 	}
@@ -73,14 +82,18 @@ class APIStore {
 	decodeUserFromToken() {
 		return new Promise(function(resolve, reject){
 			try{
-				let tokenData = decodeToken(api.token),
-					user = tokenData.payload
+				let key = process.env.REACT_APP_KEY,
+					payload = jwt.verify(api.token, key),
+					user = payload.user
+
+				// console.log(payload)
+
 				store.user = {...user}
 				resolve(store.user)
 	    	}
 			catch(error) {
 				// @todo - report error + token + expiry
-				console.log('Failed to decode token')
+				console.log('Failed to decode token', api.token, error.message)
 				store.logout().then(()=>{
 					store.toastr('error', 'Welcome back', 'Please log in')
 					reject(error)
@@ -99,28 +112,26 @@ class APIStore {
 		  }
 		  if(data){
 			let user = data
-			Promise.resolve(user)
+			return Promise.resolve(user)
 		  }
 		})
 	}
 
 	fetch(table){
 		return axios.get(store.api + '/' + table).then(response => {
-	      let { success, message, data } = response.data
-	      if(!success){
-			store.toastr('error', '', message)
-			return Promise.reject(message)
-	      }
-	      if(data){
-      		store[table] = data
-	      	return Promise.resolve(store[table])
-	      }
+			let { success, message, data } = response.data
+			if(!success){
+				store.toastr('error', '', message)
+				return Promise.reject(message)
+			}
+			store[table] = data
+			return Promise.resolve(store[table])
 	    })
 	}
 	
 	fakeFetch(table){
 		return new Promise(function(resolve, reject){
-			store[table] = database[table] // replace with your server call
+			store[table] = database[table] 
 			resolve(store[table])
 		})
 	}
@@ -135,6 +146,39 @@ class APIStore {
 	  return Promise.all(api.promises).then(()=>{ api.status.loaded = true })
 	}
 
+	fetchFriend(friend_id){
+		return axios.get(api.base + '/friends/' + friend_id).then(response => {
+			let { success, message, data } = response.data
+			if(!success){
+				store.toastr('error', '', message)
+				return Promise.reject(message)
+			}
+			store.friend = data
+			return Promise.resolve(store.friend)
+		})
+	}
+	
+	fakeFetchFriend(slug){
+		return new Promise(function(resolve, reject){
+			let friend = database.friends.where('slug', slug)[0] 
+			store.friend = friend
+			resolve(store.friend)
+		})
+	}
+	
+	fetchPost(post_id){
+		return axios.get(api.base + '/posts/' + post_id).then(response => {
+			let { success, message, data } = response.data
+			if(!success){
+				store.toastr('error', '', message)
+				return Promise.reject(message)
+			}
+			store.post = data
+			return Promise.resolve(store.post)
+		})
+	}
+	
+	
 	requestPasswordReset(data){
 		return axios.post(api.base + '/password/email', data).then(response => {
 		  let { success, message } = response.data

@@ -7,6 +7,8 @@ import store from '../../utils/store.js';
 // Pages
 import Profile from '../../pages/Profile/'
 import Friends from '../../pages/Friends/'
+import Friend from '../../pages/Friend/'
+import Post from '../../pages/Post/'
 
 // Container
 import Simple from '../../containers/Simple/'
@@ -44,15 +46,17 @@ class Dashboard extends Component {
             </div>
             <div className="container-fluid">
               
-              <ToastContainer ref={(input) => {store.toast = input;}}
+              <ToastContainer ref={(input) => {store.toast = input}}
                 toastMessageFactory={ToastMessageFactory}
                 className="toast-top-right" />
               
               <Switch>
                 {/* profile */}
-                <Route path="/profile" render={()=><Profile name="Profile"/>}/>
-
+                <Route path="/profile" render={()=><Profile name="Profile" user={store.user}/>}/>
+                
                 <Route exact path="/friends" render={()=><Friends url="friends" name="Friends"/>}/>
+                
+                <Route exact path="/friend/:slug" render={()=><Friend url="friend" name="Friend"/>}/>
 
                 <Route path="/:path" component={Simple}/>
                 

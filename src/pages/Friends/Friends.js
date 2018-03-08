@@ -155,6 +155,11 @@ class Friends extends Component {
     return classes;
   }
 
+  sayHello = (e, user) => {
+    e.preventDefault()
+    console.log(e, user.first_name)
+  }
+
   render() {
 
   const { presentDate, validateEmail } = store
@@ -231,8 +236,10 @@ class Friends extends Component {
             <div className="col-sm-6 col-md-4" key={user.id}>
               <div className={this.cardClasses(user)}>
                 <div className="card-header">
-                  <Link to={'/friends/'+user.id} className="title" data-tip={user.intro} 
-                    data-effect="solid" data-place="bottom">{user.first_name + ' ' + user.last_name}</Link>
+                  <Link 
+                    to={'/friend/'+user.slug} className="title" 
+                    onClick={api.fakeFetchFriend.bind(this, user.slug)}>
+                    {user.first_name + ' ' + user.last_name}</Link>
                 </div>
                 
                 <div className="my-h">
@@ -240,7 +247,7 @@ class Friends extends Component {
                     <img src={user.image || store.tempImage} className="img-avatar" alt="Image"/>
                   </div>
                   <div className="col-sm-8 float-right">
-                    <p className="mb-h"><b>Email:</b> {user.email} {!!user.email_verified && <span className="fa fa-check" data-tip="Verified" data-effect="solid"></span>}</p>
+                    <p className="mb-h"><b>Email:</b> {user.email} {!!user.email_verified && <span className="fa fa-check"></span>}</p>
                     <p className="mb-h"><b>Joined:</b> {user.created_at} </p>
                   </div>
                   <br/>

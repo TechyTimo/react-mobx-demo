@@ -34,6 +34,12 @@ if(api.token){
       .then(() => {
         store.status.loaded = true 
       })
+      .catch(error => {
+          console.log(error)
+      })
+    })
+    .catch(error => {
+        console.log(error)
     })
 
 } 
