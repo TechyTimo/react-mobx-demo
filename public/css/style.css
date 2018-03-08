@@ -637,6 +637,8 @@ select.form-control:focus::-ms-value {
 
 .tab-content > .tab-pane {
   display: none; }
+.tab-content > .tab-pane.active {
+  display: inline; }
 
 .nav-tabs .nav-link {
   color: #55595c; }

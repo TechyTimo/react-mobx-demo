@@ -58,7 +58,7 @@ class APIStore {
 			try{
 
 				let { first_name, last_name, email, image } = user,
-					data = { 
+					payload = { 
 						user: { first_name, last_name, email, image },
 						from: 'frontend',
 					},
@@ -69,7 +69,7 @@ class APIStore {
 						notBefore: '0h',
 						subject: user.id + ''
 					},
-					token = jwt.sign(data, key, options)
+					token = jwt.sign(payload, key, options)
 
 				return resolve([user, token])
 			}
