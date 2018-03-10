@@ -81,11 +81,6 @@ class APIStore {
 			api.keepRefreshingToken()
 
 	  		return resolve(token, refresh)
-			// return Promise.all([token, refresh]).then(res=>{ 
-			// console.log(res[0], res[1])
-			// 	return resolve(token, refresh)
-			// })
-
 		});
 	}
 
@@ -141,9 +136,8 @@ class APIStore {
     	}
 		catch(error) {
 			// @todo - report error + token + expiry
-			console.log('Failed to decode token', token, error.message)
+			console.log('Failed to decode token -', error.message)
 			store.logout()
-			store.toastr('error', 'Welcome back', 'Please log in')
 			return false
 		}
     }
