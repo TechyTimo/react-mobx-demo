@@ -27,13 +27,10 @@ if(refresh){
 
   let user = api.decodeToken(refresh),
       token = api.createToken(user)
-  // save token
-  api.saveToken(token)
 
-  // schedule token refreshing
-  api.refreshToken()
+  api.saveToken(token)
+  api.keepRefreshingToken()
   
-  // check if a token exists
   store.login()
   .then(api.fakeFetch.bind(null, 'friends')) // replace with api.fetch
   .then(() => {

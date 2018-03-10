@@ -41,7 +41,7 @@ class APIStore {
 			api.saveRefreshToken(refresh)
 
 			// schedule token refreshing
-			api.refreshToken()
+			api.keepRefreshingToken()
 
 			// inform
 			store.toastr('success', message, 'Loading your data...')
@@ -78,7 +78,7 @@ class APIStore {
 			api.saveRefreshToken(refresh)
 
 			// schedule token refreshing
-			api.refreshToken()
+			api.keepRefreshingToken()
 
 	  		return resolve(token, refresh)
 			// return Promise.all([token, refresh]).then(res=>{ 
@@ -114,7 +114,7 @@ class APIStore {
 		}
 	}
 	@observable refreshingToken = 0
-	refreshToken(){
+	keepRefreshingToken(){
 		api.refreshingToken = setInterval(()=>{
 			console.log('refreshing api token...')
 			let refresh = api.cookies.getItem('demo_app_refresh')
