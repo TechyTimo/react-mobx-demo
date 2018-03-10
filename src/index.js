@@ -21,28 +21,28 @@ if(!window.location.pathname.includes('/auth')){
   store.redirectTo = window.location.pathname
 }
 
-// check if a token exists
-if(api.token){
+let refresh = api.cookies.getItem('demo_app_refresh')
+
+if(refresh){
+
+  let user = api.decodeToken(refresh),
+      token = api.createToken(user)
+  // save token
+  api.saveToken(token)
+
+  // schedule token refreshing
+  api.refreshToken()
   
-  // set token header 
-  api.axios.defaults.headers.common['Authorization'] = `Bearer ${api.token}`
-
-  store.loadUser()
-    .then(user => {
-      store.login(user, api.token)
-      .then(api.fakeFetch.bind(null, 'friends')) // replace with api.fetch
-      .then(() => {
-        store.status.loaded = true 
-      })
-      .catch(error => {
-          console.log(error)
-      })
-    })
-    .catch(error => {
-        console.log(error)
-    })
-
-} 
+  // check if a token exists
+  store.login()
+  .then(api.fakeFetch.bind(null, 'friends')) // replace with api.fetch
+  .then(() => {
+    store.status.loaded = true 
+  })
+  .catch(error => {
+    console.log(error)
+  })
+}
 
 function LoggedIn ({component: Component, ...rest}) {
   return (

@@ -8,53 +8,47 @@ class MainStore {
 	@observable status = {loaded: false}
 	@observable redirectTo = '/'
 	@observable history = {} // for navigation
-  	@observable user = {}
   	@observable friends = []
   	@observable friend = {}
   	@observable posts = []
   	@observable post = {}
 	@observable title = ''
 
-	loadUser(){
-		return new Promise(function(resolve, reject){
+	@computed get user(){
+		// decode user from token
+		let user = api.decodeToken()
 
-			// decode user from token
-			let user = api.decodeUserFromToken()
+		if(user){
+			return user
+		}
+		else{
+			
+			// load the user from localStorage
+			user = JSON.parse(localStorage.getItem('demo_app_user'))
 
 			if(user){
-				resolve(user)
+				return user
 			}
 			else{
-				
-				// load the user from localStorage
-				user = JSON.parse(localStorage.getItem('demo_app_user'))
-
-				if(user){
-					resolve(user)
-				}
-				else{
-					// load user from api - last resort
-					user = api.fetchUser().then(user => resolve(user))
-				}
+				// load user from api - last resort
+				return api.fetchUser()
 			}
-		});
+		}
 	}
-	login(user, token){
+
+	login(){
 		return new Promise(function(resolve, reject){
-			// update user
-			store.user = {...user}
+
+			let token = api.cookies.getItem('demo_app_token')
 
 			// set the token header
 			api.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-			
-			// save the token on the client for 1 hour
-			api.cookies.setItem('demo_app_jwt', token, 1)
 			
 			// declare logged in
 			store.auth = true
 
 			// save the user
-			localStorage.setItem('demo_app_user', JSON.stringify({...user}))
+			localStorage.setItem('demo_app_user', JSON.stringify({...store.user}))
 
 			// redirect to designated route
 			store.history.push(store.redirectTo)
@@ -65,15 +59,17 @@ class MainStore {
 
 	logout() {
 		return new Promise(function(resolve, reject){
-		    api.cookies.removeItem('demo_app_jwt')
+		    api.cookies.removeItem('demo_app_token')
+		    api.cookies.removeItem('demo_app_refresh')
 		    localStorage.removeItem('demo_app_user')
+
+		    clearInterval(api.refreshingToken)
 	        
 	        delete api.axios.defaults.headers.common['Authorization']	        
 
 		    store.auth = false
 		    store.history.push('/auth/login')
 
-		    store.user = {}
 		    store.friends = []
 		    store.status.loaded = false
 	    });

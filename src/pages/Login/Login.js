@@ -29,9 +29,7 @@ class Login extends Component {
     }
 
     api.fakeLogin(data) // replace with api.login
-      .then(([user, token]) => {
-        store.login(user, token)
-      })
+      .then(store.login)
       .then(api.fakeFetch.bind(null, 'friends')) // replace with api.fetch
       .then(() => {
         store.toastr('success', 'Welcome', 'Successfully logged in!')

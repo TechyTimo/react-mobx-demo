@@ -51,7 +51,7 @@ class Profile extends Component {
     this.setUser()
     store.toastr('info', 'Name, email, photo reset!')
   }
-  
+
   updateUser(e) {
     e.preventDefault()
     let data = {      
@@ -60,7 +60,7 @@ class Profile extends Component {
       email: this.state.email,
     }
     // update on api
-    api.updateUser(data)
+    api.updateUser(this.props.user, data)
 
   }
 

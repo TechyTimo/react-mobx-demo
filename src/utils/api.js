@@ -5,24 +5,25 @@ import store from './store.js'
 import database from './database.js'
 import axios from 'axios'
 
+
 class APIStore {
 
 	@observable base = process.env.REACT_APP_API+'/api'
 	@observable axios = axios // expose for testing
 	@observable cookies = cookies // expose for testing
+	
+	TOKEN_LIFESPAN = 60*60*24 // seconds => 1 hour
+	REFRESH_LIFESPAN = 60*60*24*30 // seconds => 1 month
 
-	@computed get token() {
-		return api.cookies.getItem('demo_app_jwt')
-	}
+	fetchTokens(response) {
+		let { authorization, refresh } = response.headers
 
-	fetchToken(response) {
-		let { authorization } = response.headers
 		if(authorization){
-			return authorization.substr(7, authorization.length)
+			let token = authorization.substr(7, authorization.length)
+			return [token, refresh]
 		}
-		else {
-			return false
-		}
+
+		return false
 	}
 
 	login(data){
@@ -33,73 +34,118 @@ class APIStore {
 				return Promise.reject(message)
 			}
 			// set session
-			let token = api.fetchToken(response)
+			let [token, refresh] = api.fetchTokens(response)
+			
+			// save the token on the client
+			api.saveToken(token)
+			api.saveRefreshToken(refresh)
+
+			// schedule token refreshing
+			api.refreshToken()
 
 			// inform
 			store.toastr('success', message, 'Loading your data...')
 			
-			return Promise.resolve([data, token])
+			return Promise.resolve(token)
 		})
+	}
+	saveToken(token){
+		api.cookies.setItem('demo_app_token', token, api.TOKEN_LIFESPAN / 60 / 60) // in hours
+		api.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+	}
+	saveRefreshToken(refresh){
+		api.cookies.setItem('demo_app_refresh', refresh, api.REFRESH_LIFESPAN / 60 / 60) // in hours
 	}
 
 	fakeLogin(data){
-		let { email, password } = data
-		let user = database.friends.where('email', email)[0] 
-		if(!user){
-			store.toastr('error', 'Email not registered', 'No user by that email')
-			return
-		}
-		if(user.password !== password){
-			store.toastr('error', 'Wrong password', 'Try again')
-			return
-		}
-
 		return new Promise(function(resolve, reject){
-			try{
-
-				let { first_name, last_name, email, image } = user,
-					payload = { 
-						user: { first_name, last_name, email, image },
-						from: 'frontend',
-					},
-					key = process.env.REACT_APP_KEY,
-					options = { 
-						algorithm: 'HS256',
-						expiresIn: '1h', 
-						notBefore: '0h',
-						subject: user.id + ''
-					},
-					token = jwt.sign(payload, key, options)
-
-				return resolve([user, token])
+			let { email, password } = data
+			let user = database.friends.where('email', email)[0] 
+			if(!user){
+				store.toastr('error', 'Email not registered', 'No user by that email')
+				return
 			}
-			catch(error) {
-				store.toastr('error', error.message)
+			if(user.password !== password){
+				store.toastr('error', 'Wrong password', 'Try again')
+				return
 			}
-		})
+
+			let token = api.createToken(user), 
+				refresh = api.createToken(user, api.REFRESH_LIFESPAN) // in seconds
+	  		
+			// save the token on the client
+			api.saveToken(token)
+			api.saveRefreshToken(refresh)
+
+			// schedule token refreshing
+			api.refreshToken()
+
+	  		return resolve(token, refresh)
+			// return Promise.all([token, refresh]).then(res=>{ 
+			// console.log(res[0], res[1])
+			// 	return resolve(token, refresh)
+			// })
+
+		});
 	}
 
-	decodeUserFromToken() {
-		return new Promise(function(resolve, reject){
-			try{
-				let key = process.env.REACT_APP_KEY,
-					payload = jwt.verify(api.token, key),
-					user = payload.user
+	createToken(user, expiresIn = api.TOKEN_LIFESPAN){
+		try{
 
-				// console.log(payload)
+			let { first_name, last_name, email, image } = user,
+				payload = { 
+					user: { first_name, last_name, email, image },
+					from: 'frontend',
+				},
+				key = process.env.REACT_APP_KEY,
+				options = { 
+					algorithm: 'HS256',
+					expiresIn: expiresIn, // in seconds
+					notBefore: '0h',
+					subject: user.id + ''
+				},
+				token = jwt.sign(payload, key, options)
 
-				store.user = {...user}
-				resolve(store.user)
-	    	}
-			catch(error) {
-				// @todo - report error + token + expiry
-				console.log('Failed to decode token', api.token, error.message)
-				store.logout().then(()=>{
-					store.toastr('error', 'Welcome back', 'Please log in')
-					reject(error)
-				})
+			return token
+		}
+		catch(error) {
+			store.toastr('error', error.message)
+			return false
+		}
+	}
+	@observable refreshingToken = 0
+	refreshToken(){
+		api.refreshingToken = setInterval(()=>{
+			console.log('refreshing api token...')
+			let refresh = api.cookies.getItem('demo_app_refresh')
+			if(refresh){
+				let user = api.decodeToken(refresh),
+				token = api.createToken(user)
+				// console.log('token', token.substr(token.length-5, token.length))
+				api.saveToken(token)
 			}
-    	})
+			else {
+				store.logout()
+				store.toastr('error', 'Session timed out', 'Please log in')
+			}
+		}, api.TOKEN_LIFESPAN*1000) // in milliseconds
+	}
+
+	decodeToken(token = api.cookies.getItem('demo_app_token')) {
+		try{
+			let key = process.env.REACT_APP_KEY,
+				payload = jwt.verify(token, key),
+				user = payload.user
+
+			return user
+    	}
+		catch(error) {
+			// @todo - report error + token + expiry
+			console.log('Failed to decode token', token, error.message)
+			store.logout()
+			store.toastr('error', 'Welcome back', 'Please log in')
+			return false
+		}
     }
 
 	fetchUser() {
@@ -203,13 +249,10 @@ class APIStore {
 	      store.toastr('success', message, 'Logging you in...')
 		  
 		  // set session
-	      let token = api.fetchToken(response)
+	      let [token, refresh] = api.fetchTokens(response)
 	      
 	      // log in the user
-	      store.login(data, token)
-	      	.then(()=>{
-	      		store.toastr('success', 'Welcome', 'Successfully logged in!')
-	      	})
+	      store.login()
 	    })
 	}
 
@@ -230,17 +273,17 @@ class APIStore {
 	    })
 	}
 
-	updateUser(data) {
-		return axios.post(`${api.base}/users/${store.user.id}`, data).then(response => {
+	updateUser(user, data) {
+		return axios.post(`${api.base}/users/${user.id}`, data).then(response => {
 		  let { success, message } = response.data
 	      if(!success){
 	        store.toastr('error', '', message)
 	        return Promise.reject(message)
 	      }
 	      // update the view
-	      store.user.first_name = data.first_name
-	      store.user.last_name = data.last_name
-	      store.user.email = data.email
+	      user.first_name = data.first_name
+	      user.last_name = data.last_name
+	      user.email = data.email
 	      store.toastr('success', 'Name, email, photo updated!')
 	    })
 	}
