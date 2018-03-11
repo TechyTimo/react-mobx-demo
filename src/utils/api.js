@@ -15,12 +15,11 @@ class APIStore {
 	TOKEN_LIFESPAN = 60*60*24 // seconds => 1 hour
 	REFRESH_LIFESPAN = 60*60*24*30 // seconds => 1 month
 
-	fetchTokens(response) {
-		let { authorization, refresh } = response.headers
+	fetchToken(response) {
+		let { authorization } = response.headers
 
 		if(authorization){
-			let token = authorization.substr(7, authorization.length)
-			return [token, refresh]
+			return authorization.substr(7, authorization.length)
 		}
 
 		return false
@@ -34,7 +33,8 @@ class APIStore {
 				return Promise.reject(message)
 			}
 			// set session
-			let [token, refresh] = api.fetchTokens(response)
+			let token = api.fetchToken(response)
+  			let refresh = api.createToken(data, api.REFRESH_LIFESPAN)
 			
 			// save the token on the client
 			api.saveToken(token)
@@ -233,20 +233,28 @@ class APIStore {
 
 	resetPassword(data) {
 		return axios.post(store.api + '/set-password', data).then(response => {
-	      let { success, message, data } = response.data
-	      if(!success){
-	        store.toastr('error', message)
-	        return Promise.reject(message)
-	      }
+			let { success, message, data } = response.data
+			if(!success){
+			store.toastr('error', message)
+			return Promise.reject(message)
+			}
 
-	      // inform
-	      store.toastr('success', message, 'Logging you in...')
-		  
-		  // set session
-	      let [token, refresh] = api.fetchTokens(response)
-	      
-	      // log in the user
-	      store.login()
+			// inform
+			store.toastr('success', message, 'Logging you in...')
+
+			// set session
+			let token = api.fetchToken(response)
+			let refresh = api.createToken(data, api.REFRESH_LIFESPAN)
+
+			// save the token on the client
+			api.saveToken(token)
+			api.saveRefreshToken(refresh)
+
+			// schedule token refreshing
+			api.keepRefreshingToken()
+
+			// log in the user
+			store.login()
 	    })
 	}
 
