@@ -1,9 +1,10 @@
 import { computed, observable } from "mobx"
 import api from './api.js'
 
+const NAMESPACE = process.env.REACT_APP_NAMESPACE
+
 class MainStore {
 
-	@observable api = process.env.REACT_APP_API+'/api'
 	@observable auth = false
 	@observable status = {loaded: false}
 	@observable redirectTo = '/'
@@ -24,7 +25,7 @@ class MainStore {
 		else{
 			
 			// load the user from localStorage
-			user = JSON.parse(localStorage.getItem('demo_app_user'))
+			user = JSON.parse(localStorage.getItem(NAMESPACE+'user'))
 
 			if(user){
 				return user
@@ -39,7 +40,7 @@ class MainStore {
 	login(){
 		return new Promise(function(resolve, reject){
 
-			let token = api.cookies.getItem('demo_app_token')
+			let token = api.cookies.getItem(NAMESPACE+'token')
 
 			// set the token header
 			api.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
@@ -48,7 +49,7 @@ class MainStore {
 			store.auth = true
 
 			// save the user
-			localStorage.setItem('demo_app_user', JSON.stringify({...store.user}))
+			localStorage.setItem(NAMESPACE+'user', JSON.stringify({...store.user}))
 
 			// redirect to designated route
 			store.history.push(store.redirectTo)
@@ -59,9 +60,9 @@ class MainStore {
 
 	logout() {
 		return new Promise(function(resolve, reject){
-		    api.cookies.removeItem('demo_app_token')
-		    api.cookies.removeItem('demo_app_refresh')
-		    localStorage.removeItem('demo_app_user')
+		    api.cookies.removeItem(NAMESPACE+'token')
+		    api.cookies.removeItem(NAMESPACE+'refresh')
+		    localStorage.removeItem(NAMESPACE+'user')
 
 		    clearInterval(api.refreshingToken)
 	        

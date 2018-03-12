@@ -5,15 +5,16 @@ import store from './store.js'
 import database from './database.js'
 import axios from 'axios'
 
+const APP_KEY = process.env.REACT_APP_KEY
+const NAMESPACE = process.env.REACT_APP_NAMESPACE
+const BASE_URL = process.env.REACT_APP_API+'/api'
+const TOKEN_LIFESPAN = 60*60*24 // seconds => 1 hour
+const REFRESH_LIFESPAN = 60*60*24*30 // seconds => 1 month
 
 class APIStore {
 
-	@observable base = process.env.REACT_APP_API+'/api'
 	@observable axios = axios // expose for testing
 	@observable cookies = cookies // expose for testing
-	
-	TOKEN_LIFESPAN = 60*60*24 // seconds => 1 hour
-	REFRESH_LIFESPAN = 60*60*24*30 // seconds => 1 month
 
 	fetchToken(response) {
 		let { authorization } = response.headers
@@ -26,7 +27,7 @@ class APIStore {
 	}
 
 	login(data){
-		return axios.post(api.base + '/login', data).then(response => {
+		return axios.post(BASE_URL + '/login', data).then(response => {
 			let { success, message, data } = response.data
 			if(!success){
 				store.toastr('error', message)
@@ -34,7 +35,7 @@ class APIStore {
 			}
 			// set session
 			let token = api.fetchToken(response)
-  			let refresh = api.createToken(data, api.REFRESH_LIFESPAN)
+  			let refresh = api.createToken(data, REFRESH_LIFESPAN)
 			
 			// save the token on the client
 			api.saveToken(token)
@@ -50,11 +51,11 @@ class APIStore {
 		})
 	}
 	saveToken(token){
-		api.cookies.setItem('demo_app_token', token, api.TOKEN_LIFESPAN / 60 / 60) // in hours
+		api.cookies.setItem(NAMESPACE+'token', token, TOKEN_LIFESPAN / 60 / 60) // in hours
 		api.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
 	}
 	saveRefreshToken(refresh){
-		api.cookies.setItem('demo_app_refresh', refresh, api.REFRESH_LIFESPAN / 60 / 60) // in hours
+		api.cookies.setItem(NAMESPACE+'refresh', refresh, REFRESH_LIFESPAN / 60 / 60) // in hours
 	}
 
 	fakeLogin(data){
@@ -71,7 +72,7 @@ class APIStore {
 			}
 
 			let token = api.createToken(user), 
-				refresh = api.createToken(user, api.REFRESH_LIFESPAN) // in seconds
+				refresh = api.createToken(user, REFRESH_LIFESPAN) // in seconds
 	  		
 			// save the token on the client
 			api.saveToken(token)
@@ -84,15 +85,15 @@ class APIStore {
 		});
 	}
 
-	createToken(user, expiresIn = api.TOKEN_LIFESPAN){
+	createToken(user, expiresIn = TOKEN_LIFESPAN){
 		try{
 
-			let { first_name, last_name, email, image } = user,
+			let { id, first_name, last_name, email, image } = user,
 				payload = { 
-					user: { first_name, last_name, email, image },
+					user: { id, first_name, last_name, email, image },
 					from: 'frontend',
 				},
-				key = process.env.REACT_APP_KEY,
+				key = APP_KEY,
 				options = { 
 					algorithm: 'HS256',
 					expiresIn: expiresIn, // in seconds
@@ -112,7 +113,7 @@ class APIStore {
 	keepRefreshingToken(){
 		api.refreshingToken = setInterval(()=>{
 			console.log('refreshing api token...')
-			let refresh = api.cookies.getItem('demo_app_refresh')
+			let refresh = api.cookies.getItem(NAMESPACE+'refresh')
 			if(refresh){
 				let user = api.decodeToken(refresh),
 				token = api.createToken(user)
@@ -123,12 +124,12 @@ class APIStore {
 				store.logout()
 				store.toastr('error', 'Session timed out', 'Please log in')
 			}
-		}, api.TOKEN_LIFESPAN*1000) // in milliseconds
+		}, TOKEN_LIFESPAN*1000) // in milliseconds
 	}
 
-	decodeToken(token = api.cookies.getItem('demo_app_token')) {
+	decodeToken(token = api.cookies.getItem(NAMESPACE+'token')) {
 		try{
-			let key = process.env.REACT_APP_KEY,
+			let key = APP_KEY,
 				payload = jwt.verify(token, key),
 				user = payload.user
 
@@ -143,7 +144,7 @@ class APIStore {
     }
 
 	fetchUser() {
-		return axios.get(api.base + '/user').then(response => {
+		return axios.get(BASE_URL + '/user').then(response => {
 		  let { success, message, data } = response.data
 		  if(!success){
 			store.logout()
@@ -187,7 +188,7 @@ class APIStore {
 	}
 
 	fetchFriend(friend_id){
-		return axios.get(api.base + '/friends/' + friend_id).then(response => {
+		return axios.get(BASE_URL + '/friends/' + friend_id).then(response => {
 			let { success, message, data } = response.data
 			if(!success){
 				store.toastr('error', '', message)
@@ -207,7 +208,7 @@ class APIStore {
 	}
 	
 	fetchPost(post_id){
-		return axios.get(api.base + '/posts/' + post_id).then(response => {
+		return axios.get(BASE_URL + '/posts/' + post_id).then(response => {
 			let { success, message, data } = response.data
 			if(!success){
 				store.toastr('error', '', message)
@@ -220,7 +221,7 @@ class APIStore {
 	
 	
 	requestPasswordReset(data){
-		return axios.post(api.base + '/password/email', data).then(response => {
+		return axios.post(BASE_URL + '/password/email', data).then(response => {
 		  let { success, message } = response.data
 	      if(!success){
 	        store.toastr('error', '', message)
@@ -244,7 +245,7 @@ class APIStore {
 
 			// set session
 			let token = api.fetchToken(response)
-			let refresh = api.createToken(data, api.REFRESH_LIFESPAN)
+			let refresh = api.createToken(data, REFRESH_LIFESPAN)
 
 			// save the token on the client
 			api.saveToken(token)
@@ -259,7 +260,7 @@ class APIStore {
 	}
 
 	inviteUser(data) {
-		return axios.post(`${api.base}/users`, data).then(response => {
+		return axios.post(`${BASE_URL}/users`, data).then(response => {
 	      let { success, message, data } = response.data
 	      if(!success){
 	        store.toastr('error', '', message)
@@ -276,7 +277,7 @@ class APIStore {
 	}
 
 	updateUser(user, data) {
-		return axios.post(`${api.base}/users/${user.id}`, data).then(response => {
+		return axios.post(`${BASE_URL}/users/${user.id}`, data).then(response => {
 		  let { success, message } = response.data
 	      if(!success){
 	        store.toastr('error', '', message)
@@ -291,7 +292,7 @@ class APIStore {
 	}
 
 	updatePassword(data) {
-		return axios.post(`${api.base}/password`, data).then(response => {
+		return axios.post(`${BASE_URL}/password`, data).then(response => {
 		  let { success, message } = response.data
 	      if(!success){
 			store.toastr('error', '', message)

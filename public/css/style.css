@@ -1030,6 +1030,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased; }
 
+.app-header,
+.app-footer,
+.sidebar,
+.main,
+.aside-menu {
+  transition-duration: 0.25s, 0.25s;
+  transition-property: margin-left, margin-right; }
+  
 .animated {
   -webkit-animation-duration: 1s;
   animation-duration: 1s;

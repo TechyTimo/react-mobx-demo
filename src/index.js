@@ -21,17 +21,18 @@ if(!window.location.pathname.includes('/auth')){
   store.redirectTo = window.location.pathname
 }
 
-let refresh = api.cookies.getItem('demo_app_refresh')
+// fetch the refresh token
+let refresh = api.cookies.getItem(process.env.REACT_APP_NAMESPACE+'refresh')
 
 if(refresh){
 
+  // create a new token for security reasons
   let user = api.decodeToken(refresh),
       token = api.createToken(user)
-
   api.saveToken(token)
   api.keepRefreshingToken()
   
-  store.login()
+  store.fakeLogin() // replace with api.login()
   .then(api.fakeFetch.bind(null, 'friends')) // replace with api.fetch
   .then(() => {
     store.status.loaded = true 
