@@ -32,7 +32,7 @@ if(refresh){
   api.saveToken(token)
   api.keepRefreshingToken()
   
-  store.fakeLogin() // replace with api.login()
+  store.login()
   .then(api.fakeFetch.bind(null, 'friends')) // replace with api.fetch
   .then(() => {
     store.status.loaded = true 

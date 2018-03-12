@@ -28,8 +28,8 @@ my-app/
     partials/
     utils/
       store.js
-      api.js - change this to point to your api 
-      database.js - for the fake api
+      api.js - edit this to fit your api 
+      database.js - for the fake api calls
       cookies.js - easy api for accessing cookies
     index.js - entry point
 ```

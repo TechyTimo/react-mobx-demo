@@ -1,7 +1,7 @@
 /**
  * Timothy Max @techytimo
  */
-
+@import "grid.css";
 @charset "UTF-8";
 
 html {
@@ -302,91 +302,6 @@ span.help-block {
     color: #f00;
     display: none;
 }
-
-.col-2, .col-4, .col-6, .col-8, .col-10, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-6, .col-sm-8, .col-sm-10, .col-sm-12, .col-md-4, .col-md-6, .col-md-7, .col-md-8, .col-lg-5 {
-  position: relative;
-  width: 100%;
-  min-height: 1px;
-  padding-right: 15px;
-  padding-left: 15px; }
-  @media (min-width: 576px) {
-    .col-2, .col-4, .col-6, .col-8, .col-10, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-6, .col-sm-8, .col-sm-10, .col-sm-12, .col-md-4, .col-md-6, .col-md-7, .col-md-8, .col-lg-5 {
-      padding-right: 15px;
-      padding-left: 15px; } }
-  @media (min-width: 768px) {
-    .col-2, .col-4, .col-6, .col-8, .col-10, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-6, .col-sm-8, .col-sm-10, .col-sm-12, .col-md-4, .col-md-6, .col-md-7, .col-md-8, .col-lg-5 {
-      padding-right: 15px;
-      padding-left: 15px; } }
-  @media (min-width: 992px) {
-    .col-2, .col-4, .col-6, .col-8, .col-10, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-6, .col-sm-8, .col-sm-10, .col-sm-12, .col-md-4, .col-md-6, .col-md-7, .col-md-8, .col-lg-5 {
-      padding-right: 15px;
-      padding-left: 15px; } }
-  @media (min-width: 1200px) {
-    .col-2, .col-4, .col-6, .col-8, .col-10, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-6, .col-sm-8, .col-sm-10, .col-sm-12, .col-md-4, .col-md-6, .col-md-7, .col-md-8, .col-lg-5 {
-      padding-right: 15px;
-      padding-left: 15px; } }
-
-.col-2 {
-  flex: 0 0 16.66667%;
-  max-width: 16.66667%; }
-
-.col-4 {
-  flex: 0 0 33.33333%;
-  max-width: 33.33333%; }
-
-.col-6 {
-  flex: 0 0 50%;
-  max-width: 50%; }
-
-.col-8 {
-  flex: 0 0 66.66667%;
-  max-width: 66.66667%; }
-
-.col-10 {
-  flex: 0 0 83.33333%;
-  max-width: 83.33333%; }
-
-@media (min-width: 576px) {
-  .col-sm-2 {
-    flex: 0 0 16.66667%;
-    max-width: 16.66667%; }
-  .col-sm-3 {
-    flex: 0 0 25%;
-    max-width: 25%; }
-  .col-sm-4 {
-    flex: 0 0 33.33333%;
-    max-width: 33.33333%; }
-  .col-sm-6 {
-    flex: 0 0 50%;
-    max-width: 50%; }
-  .col-sm-8 {
-    flex: 0 0 66.66667%;
-    max-width: 66.66667%; }
-  .col-sm-10 {
-    flex: 0 0 83.33333%;
-    max-width: 83.33333%; }
-  .col-sm-12 {
-    flex: 0 0 100%;
-    max-width: 100%; } }
-
-@media (min-width: 768px) {
-  .col-md-4 {
-    flex: 0 0 33.33333%;
-    max-width: 33.33333%; }
-  .col-md-6 {
-    flex: 0 0 50%;
-    max-width: 50%; }
-  .col-md-7 {
-    flex: 0 0 58.33333%;
-    max-width: 58.33333%; }
-  .col-md-8 {
-    flex: 0 0 66.66667%;
-    max-width: 66.66667%; } }
-
-@media (min-width: 992px) {
-  .col-lg-5 {
-    flex: 0 0 41.66667%;
-    max-width: 41.66667%; } }
 
 .form-control {
   display: block;
@@ -698,8 +613,6 @@ header.navbar {
   header.navbar .navbar-brand {
     display: inline-block;
     width: 200px;
-    height: 55px;
-    padding: 0.5rem 1rem;
     margin-right: 0;
     background-image: url("../img/logo.png");
     background-repeat: no-repeat;
@@ -931,58 +844,6 @@ button.close {
 .float-right {
   float: right !important; }
 
-.mb-h {
-  margin-bottom: 0.5rem !important; }
-
-.my-h {
-  margin-top: 0.5rem !important;
-  margin-bottom: 0.5rem !important; }
-
-.mb-0 {
-  margin-bottom: 0 !important; }
-
-.mb-1 {
-  margin-bottom: 1rem !important; }
-
-.mr-2 {
-  margin-right: 1.5rem !important; }
-
-.mb-2 {
-  margin-bottom: 1.5rem !important; }
-
-.mx-2 {
-  margin-right: 1.5rem !important;
-  margin-left: 1.5rem !important; }
-
-.pt-h {
-  padding-top: 0.5rem !important; }
-
-.p-0 {
-  padding: 0 0 !important; }
-
-.pl-0 {
-  padding-left: 0 !important; }
-
-.px-0 {
-  padding-right: 0 !important;
-  padding-left: 0 !important; }
-
-.pt-1 {
-  padding-top: 1rem !important; }
-
-.pb-1 {
-  padding-bottom: 1rem !important; }
-
-.p-2 {
-  padding: 1.5rem 1.5rem !important; }
-
-.px-2 {
-  padding-right: 1.5rem !important;
-  padding-left: 1.5rem !important; }
-
-.ml-auto {
-  margin-left: auto !important; }
-
 .text-right {
   text-align: right !important; }
 
@@ -1037,28 +898,6 @@ body {
 .aside-menu {
   transition-duration: 0.25s, 0.25s;
   transition-property: margin-left, margin-right; }
-  
-.animated {
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both; }
-
-@-webkit-keyframes fadeIn {
-  from {
-    opacity: 0; }
-  to {
-    opacity: 1; } }
-
-@keyframes fadeIn {
-  from {
-    opacity: 0; }
-  to {
-    opacity: 1; } }
-
-.fadeIn {
-  -webkit-animation-name: fadeIn;
-  animation-name: fadeIn; }
 
 .main .container-fluid {
   padding: 0 30px; }
