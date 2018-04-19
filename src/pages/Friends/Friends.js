@@ -235,7 +235,7 @@ class Friends extends Component {
               <TabPane tabId="1">
                 <form action="" method="post" className="form-inline">
                   <div className="form-group col-sm-6 p-0">
-                    <span htmlFor="sort" className="col-sm-2 pl-0">Filter: </span>
+                    <span htmlFor="sort" className="col-sm-2 pl-1">Filter: </span>
                      <input type="text" 
                       className="form-control col-sm-10" id="search" placeholder="Search" 
                       value={this.state.search} onChange={this.search}/>
@@ -247,7 +247,7 @@ class Friends extends Component {
                       <option value="created_at">Date Joined</option>
                     </select>
                   </div>
-                  <div className="form-group col-sm-3 p-0">
+                  <div className="form-group col-sm-3 p-0 pr-1">
                     <span htmlFor="sort" className="col-sm-4">Order: </span>
                     <select className="form-control col-sm-8" id="descending" value={this.state.descending} onChange={this.changeInput} name="descending">
                       <option value="1">Descending</option>
@@ -267,7 +267,7 @@ class Friends extends Component {
                 <div className="card-header">
                   <Link 
                     to={'/friend/'+user.slug} className="title" 
-                    onClick={api.fakeFetchFriend.bind(this, user.slug)}>
+                    onClick={api.fakeFetchUser.bind(this, user.slug)}>
                     {user.first_name + ' ' + user.last_name}</Link>
                     <span className="float-right text-info">
                       <a href="javascript:;">

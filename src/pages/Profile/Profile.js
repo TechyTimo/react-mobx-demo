@@ -60,7 +60,7 @@ class Profile extends Component {
       email: this.state.email,
     }
     // update on api
-    api.updateUser(this.props.user, data)
+    api.fakeUpdateUser(this.props.user, data) // @todo api.updateUser
 
   }
 
@@ -86,7 +86,7 @@ class Profile extends Component {
         <h4>Your Profile</h4>
         <br/>
         <div className="row">
-          <div className="col-sm-12">
+          <div className="col-sm-6">
           
             <h6>Account Settings</h6>
 
@@ -110,10 +110,15 @@ class Profile extends Component {
                 <span className="help-block">Enter your email</span>
               </div>
               <div className="form-group">
-                <Button type="submit" color="primary"><i className="fa fa-check"></i> Update</Button>&nbsp;
-                <Button type="reset" onClick={this.resetUser} color="secondary" className="float-right"><i className="fa fa-ban"></i> Reset</Button>&nbsp;
+                <Button type="reset" onClick={this.resetUser} color="secondary"><i className="fa fa-ban"></i> Reset</Button>&nbsp;
+                <Button type="submit" color="primary" className="float-right"><i className="fa fa-check"></i> Update</Button>
               </div>
             </form>
+
+          </div>
+
+          <div className="col-sm-6">
+
 
             <h6>Change Password</h6>
 
@@ -137,7 +142,9 @@ class Profile extends Component {
                 <span className="help-block">Confirm the new password</span>
               </div>
               <div className="form-group">
-                <Button type="submit" onClick={this.updatePassword} color="primary" className="btn-block"><i className="fa fa-check"></i> Update</Button>&nbsp;
+                <Button type="submit" onClick={this.updatePassword} color="primary" className="float-right">
+                  <i className="fa fa-check"></i> Change Password
+                </Button>
               </div>
             </form>
           </div>

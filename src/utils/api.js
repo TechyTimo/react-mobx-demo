@@ -16,6 +16,11 @@ class APIStore {
 	@observable axios = axios // expose for testing
 	@observable cookies = cookies // expose for testing
 
+
+	@computed get user(){
+		return database.friends.where('id', store.user.id)[0]
+	}
+
 	fetchToken(response) {
 		let { authorization } = response.headers
 
@@ -187,7 +192,7 @@ class APIStore {
 	  return Promise.all(api.promises).then(()=>{ api.status.loaded = true })
 	}
 
-	fetchFriend(friend_id){
+	fetchUser(friend_id){
 		return axios.get(BASE_URL + '/friends/' + friend_id).then(response => {
 			let { success, message, data } = response.data
 			if(!success){
@@ -199,7 +204,7 @@ class APIStore {
 		})
 	}
 	
-	fakeFetchFriend(slug){
+	fakeFetchUser(slug){
 		return new Promise(function(resolve, reject){
 			let friend = database.friends.where('slug', slug)[0] 
 			store.friend = friend
@@ -311,6 +316,15 @@ class APIStore {
 	    })
 	}
 
+	fakeUpdateUser(user, data) {
+		return new Promise(function (resolve, reject) {
+			let friend = database.friends.where('id', user.id)[0] 
+			Object.assign(friend, data)
+			let token = api.createToken(friend)
+			api.saveToken(token)
+			resolve(user)
+		})
+	}
 	updateUser(user, data) {
 		return axios.post(`${BASE_URL}/users/${user.id}`, data).then(response => {
 		  let { success, message } = response.data

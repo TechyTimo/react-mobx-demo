@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom'
 import { observer } from "mobx-react"
+import api from '../../utils/api.js';
 import store from '../../utils/store.js';
 
 @observer
@@ -47,10 +48,10 @@ class Header extends Component {
         <ul className="nav navbar-nav ml-auto">
 
           <li className="nav-item">
-            <a className="nav-link" href="javascript:;">
-              <img src={ store.user.image || store.tempImage } className="img-avatar" alt=""/>
-              <span className="">{store.user.first_name}</span>
-            </a>
+            <Link to={'/friend/'+api.user.slug} className="nav-link" onClick={api.fakeFetchUser.bind(this, api.user.slug)}>
+              <img src={ api.user.image || store.tempImage } className="img-avatar" alt=""/>
+              <span className="">{api.user.first_name} {api.user.last_name}</span>
+            </Link>
           </li>
           <li className="nav-item">
             <a className="nav-link" onClick={this.confirmLogout.bind(this)} href="javascript:;"><i className="icon-logout"></i></a>

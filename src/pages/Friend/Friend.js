@@ -14,7 +14,7 @@ class Friend extends Component {
   componentDidMount(){
     if(!store.friend.id){
       let slug = this.props.match.params.slug
-      api.fakeFetchFriend(slug)
+      api.fakeFetchUser(slug)
     }
   }
 

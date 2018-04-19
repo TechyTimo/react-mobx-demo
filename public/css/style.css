@@ -692,14 +692,15 @@ header.navbar {
   background-color: #fff;
   margin-right: 5px;
 }
-.row.top .nav-tabs .nav-item a, 
 .row.top .nav-tabs .nav-item a{
   background-color: #67c2ef;
   color: #fff;
 }
+.row.top .nav-tabs .nav-item a.active, 
 .row.top .nav-tabs .nav-item a:hover{
   background-color: #fff;
   color: inherit;
+  border-color: #d1d4d7 #d1d4d7 #ddd;
   border-bottom-color: #fff;
 }
 
