@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { computed } from "mobx"
 import { observer } from "mobx-react"
 import store from '../../utils/store.js';
 import api from '../../utils/api.js';
@@ -15,14 +16,13 @@ class Friends extends Component {
     this.state = {
       modal: false,
       modalTitle: '',
+      id: 0,
       first_name: '',
       last_name: '',
       email: '',
-      team_id: 0,
-      list_id: 0,
       search: '',
       activeTab: '0',
-      loading: false,
+      submitting: false,
       // filters
       sort: 'first_name',
       descending: 1,
@@ -92,58 +92,83 @@ class Friends extends Component {
 
   changeInput = e => {
     let { name, value } = e.target
-    console.log(name, value)
     let obj = {}
     obj[name] = value;
     this.setState(obj);
   }
 
   newUser() {
+    // clear the form
     this.setState({
       modalTitle: 'Invite New User',
+      id: 0,
       first_name: '',
       last_name: '',
       email: '',
-      team_id: 0,
-      list_id: 0,
+      submitting: false,
     });
     this.toggleModal()
   }
 
   saveUser() {
 
-    this.setState({loading: true})
+    this.setState({submitting: true})
 
     // create the user object
     let data = {
+      id: this.state.id,
       first_name: this.state.first_name,
       last_name: this.state.last_name,
       email: this.state.email, 
       active : this.state.active == 'Active',
-      team_id: this.state.team_id, 
-      list_id: this.state.list_id, 
     }
     
-    // register the user on the api
-    api.inviteUser(data).then(() => {
-
-      // clear new-user form
-      this.setState({
-        modalTitle: '',
-        first_name: '',
-        last_name: '',
-        email: '',
-        team_id: 0,
-        list_id: 0,
-        loading: false,
-      });
-
-      // hide modal
-      this.toggleModal()
-
-    })
+    if(this.state.id){ 
+      // updating an existing user
+      api.fakeEditUser(data).then(() => { // @todo - api.editUser
+        this.toggleModal()
+      })
+    }
+    else{
+      // register the user on the api
+      data.id = Date.now()
+      data.image = '/img/avatars/empty.jpg'
+      data.created_at = (new Date()).toMysqlFormat()
+      api.fakeInviteUser(data).then(() => { // @todo - api.inviteUser
+        this.toggleModal()
+      })
+    }
 
   }
+
+  showEditForm ({ id, first_name, last_name, email }) {
+    // populate form
+    this.setState({
+      modalTitle: 'Edit User', 
+      id, 
+      first_name, 
+      last_name, 
+      email,
+      submitting: false,
+    })
+    // show modal
+    this.toggleModal()
+  }
+
+  confirmDelete(user) {
+    store.confirmTitle = 'Delete User'
+    store.confirmText = `Are you sure you want to delete ${user.first_name + ' ' + user.last_name}?`
+    store.confirmCallback = this.deleteUser.bind(this, user)
+    store.confirmOpen = true
+  }
+ 
+  deleteUser(user){
+    api.fakeDeleteUser(user).then(() => { // @todo - api.deleteUser()
+      store.confirmOpen = false
+      store.toastr('success', `Successfully removed!`, `${user.first_name + ' ' + user.last_name} was deleted!`)
+    })
+  }
+
   cardClasses(user){
     let classes = 'card'
     if(this.props.id == user.id){
@@ -155,14 +180,17 @@ class Friends extends Component {
     return classes;
   }
 
-  sayHello = (e, user) => {
-    e.preventDefault()
-    console.log(e, user.first_name)
+  disabledSubmit() {
+    // console.log('change observed')
+    return !this.state.first_name 
+      || !this.state.last_name 
+      || !store.validateEmail(this.state.email) 
+      || this.state.submitting
   }
 
   render() {
 
-  const { presentDate, validateEmail } = store
+    const { presentDate } = store
 
     if (!store.status.loaded) {
       return (
@@ -171,6 +199,7 @@ class Friends extends Component {
         </div>
       )
     }
+
     return (
       <div className="animated fadeIn">
         
@@ -240,6 +269,14 @@ class Friends extends Component {
                     to={'/friend/'+user.slug} className="title" 
                     onClick={api.fakeFetchFriend.bind(this, user.slug)}>
                     {user.first_name + ' ' + user.last_name}</Link>
+                    <span className="float-right text-info">
+                      <a href="javascript:;">
+                        <i className="fa fa-remove" onClick={ this.confirmDelete.bind(this, user) } ></i>
+                      </a>
+                      <a href="javascript:;">
+                        <i className="fa fa-pencil" onClick={ this.showEditForm.bind(this, user) }></i>
+                      </a>
+                    </span>
                 </div>
                 
                 <div className="my-h">
@@ -292,12 +329,8 @@ class Friends extends Component {
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
-            <Button className="float-right" color="primary" onClick={this.saveUser}  disabled={
-              !this.state.first_name 
-              || !this.state.last_name 
-              || !validateEmail(this.state.email) 
-              || (!parseInt(this.state.team_id) && !parseInt(this.state.list_id)) 
-              || this.state.loading}>Send Invitation</Button>
+            <Button className="float-right" color="primary" onClick={this.saveUser} 
+              disabled={this.disabledSubmit()}>{this.state.id ? 'Edit User' : 'Send Invitation'}</Button>
           </ModalFooter>
         </Modal>
 

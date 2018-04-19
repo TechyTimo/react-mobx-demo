@@ -42,7 +42,7 @@ class Dashboard extends Component {
           <div className="main" >
 
             <div className="container-fluid">
-              <h2 className="title mb-1">{store.title}</h2>
+              <h2 className="title mb-1 mt-1">{store.title}</h2>
             </div>
             <div className="container-fluid">
               

@@ -218,7 +218,42 @@ class APIStore {
 			return Promise.resolve(store.post)
 		})
 	}
+
+	fakeInviteUser(user){
+		return new Promise(function(resolve, reject){			
+			database.friends.push(user)
+			resolve(database.friends)
+		})
+	}
+	fakeEditUser(user){
+		return new Promise(function(resolve, reject){
+			let friend = database.friends.where('id', user.id)[0] 
+			Object.assign(friend, user)
+			resolve(database.friends)
+		})
+	}
 	
+	deleteUser(user){
+		return axios.delete(store.api + '/users/' + user.id).then(response => {
+			if(!response.data.success){
+				store.toastr('error', '', response.data.message)
+				return Promise.reject(response.data.message)
+			}
+			let index = store.friends.indexOf(user)
+			store.friends.splice(index, 1)
+			// delete store.friends[user.id]
+			return Promise.resolve(store.friends.length)
+	  })
+	}
+	fakeDeleteUser(user){
+		return new Promise(function (resolve, reject) {
+			let index = database.friends.indexOf(user)
+			database.friends.splice(index, 1)
+			// delete database.friends[user.id]
+			resolve(database.friends.length)
+		})
+	}
+
 	
 	requestPasswordReset(data){
 		return axios.post(BASE_URL + '/password/email', data).then(response => {

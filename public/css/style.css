@@ -675,6 +675,10 @@ header.navbar {
   text-decoration: none;
   color: #4dadc1;
 }
+.card-header span a {
+  padding: 10px 5px 10px 10px;
+  font-size: 18px;
+}
 
 .row.top .nav-tabs{
   border-bottom: none;
@@ -1088,3 +1092,4 @@ body {
 
 .inline-block {
   display: inline-block; }
+

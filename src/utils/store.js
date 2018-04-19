@@ -172,7 +172,7 @@ class MainStore {
 	// confirm modal
 	@observable confirmTitle = 'Confirm'
 	@observable confirmText = 'Are you sure you want to confirm this?'
-	@observable confirmCallback = () => { return false }
+	@observable confirmCallback = () => false
 	@observable confirmOpen = false
 	
 	// sharing modal
