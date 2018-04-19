@@ -316,16 +316,15 @@ class APIStore {
 	    })
 	}
 
-	fakeUpdateUser(user, data) {
+	fakeUpdateAccount(user, data) {
 		return new Promise(function (resolve, reject) {
-			let friend = database.friends.where('id', user.id)[0] 
-			Object.assign(friend, data)
-			let token = api.createToken(friend)
+			Object.assign(api.user, data)
+			let token = api.createToken(api.user)
 			api.saveToken(token)
 			resolve(user)
 		})
 	}
-	updateUser(user, data) {
+	updateAccount(user, data) {
 		return axios.post(`${BASE_URL}/users/${user.id}`, data).then(response => {
 		  let { success, message } = response.data
 	      if(!success){
@@ -340,12 +339,29 @@ class APIStore {
 	    })
 	}
 
+	fakeUpdatePassword({old_password, password, password_confirmation}) {
+		return new Promise(function (resolve, reject) {
+			if(old_password !== api.user.password){
+				store.toastr('error', 'Wrong current password!', 'Please try again')
+				return
+			}
+			if(password !== password_confirmation){
+				store.toastr('error', 'New passwords dont match!', 'Please try again')
+				return
+			}
+			Object.assign(api.user, { password })
+			let token = api.createToken(api.user)
+			api.saveToken(token)
+			store.toastr('success', 'Successful', 'Password successfully changed!')
+			resolve(api.user)
+		})
+	}
 	updatePassword(data) {
 		return axios.post(`${BASE_URL}/password`, data).then(response => {
 		  let { success, message } = response.data
 	      if(!success){
 			store.toastr('error', '', message)
-			return Promise.reject(message)
+			return
 	      }
 	      store.toastr('success', 'Password updated!')
 	    })

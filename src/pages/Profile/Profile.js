@@ -22,7 +22,7 @@ class Profile extends Component {
     }
 
     this.resetUser = this.resetUser.bind(this);
-    this.updateUser = this.updateUser.bind(this);
+    this.updateAccount = this.updateAccount.bind(this);
     this.updatePassword = this.updatePassword.bind(this);
   }
   
@@ -52,7 +52,7 @@ class Profile extends Component {
     store.toastr('info', 'Name, email, photo reset!')
   }
 
-  updateUser(e) {
+  updateAccount(e) {
     e.preventDefault()
     let data = {      
       first_name: this.state.first_name,
@@ -60,7 +60,7 @@ class Profile extends Component {
       email: this.state.email,
     }
     // update on api
-    api.fakeUpdateUser(this.props.user, data) // @todo api.updateUser
+    api.fakeUpdateAccount(this.props.user, data) // @todo api.updateAccount
 
   }
 
@@ -73,10 +73,7 @@ class Profile extends Component {
       password_confirmation: this.state.password_confirmation,
     }
     // update on api
-    api.updatePassword(data)
-      .then(() => {
-        this.closeAside()
-      })
+    api.fakeUpdatePassword(data) // @todo - api.updatePassword
   }
 
   render() {
@@ -90,7 +87,7 @@ class Profile extends Component {
           
             <h6>Account Settings</h6>
 
-            <form action="" method="post" onSubmit={this.updateUser}>
+            <form action="" method="post" onSubmit={this.updateAccount}>
               <div className="form-group">
                 <label htmlFor="nf-first-name">First Name</label>
                 <input type="text" id="nf-first-name" name="nf-first-name" className="form-control" 
